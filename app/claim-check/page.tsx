@@ -14,6 +14,19 @@ export default function ClaimCheckPage() {
   const [fibre, setFibre] = useState("");
 
   function handleContinue() {
+    if (
+      !productName.trim() ||
+      !claim.trim() ||
+      !protein.trim() ||
+      !sugar.trim() ||
+      !fibre.trim()
+    ) {
+      alert(
+        "Please enter product name, proposed claim and all nutrition data before continuing."
+      );
+      return;
+    }
+
     localStorage.setItem(
       "veritasClaim",
       JSON.stringify({
@@ -26,18 +39,21 @@ export default function ClaimCheckPage() {
       })
     );
 
+    localStorage.removeItem("veritasEvidence");
+
     router.push("/evidence");
   }
 
   return (
     <main className="min-h-screen bg-slate-50 p-10">
+
       <div className="mx-auto max-w-4xl">
 
         <p className="text-sm font-medium text-slate-500">
           New Claim Check
         </p>
 
-        <h1 className="mt-2 text-3xl font-semibold text-slate-900">
+        <h1 className="mt-2 font-serif text-4xl font-semibold text-slate-900">
           Start a New Claim Check
         </h1>
 
@@ -45,9 +61,11 @@ export default function ClaimCheckPage() {
           Enter your product details and proposed claim to begin verification.
         </p>
 
-        <div className="mt-8 rounded-xl border border-slate-200 bg-white p-8">
+        <div className="mt-8 rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
 
+          {/* Product */}
           <div>
+
             <label className="text-sm font-medium text-slate-700">
               Product Name
             </label>
@@ -57,11 +75,14 @@ export default function ClaimCheckPage() {
               onChange={(e) => setProductName(e.target.value)}
               type="text"
               placeholder="e.g. Protein+ Chocolate Bar"
-              className="mt-2 w-full rounded-lg border border-slate-300 px-4 py-3 outline-none focus:border-slate-500"
+              className="mt-2 w-full rounded-lg border border-slate-300 px-4 py-3 outline-none transition focus:border-slate-500"
             />
+
           </div>
 
+          {/* Category */}
           <div className="mt-6">
+
             <label className="text-sm font-medium text-slate-700">
               Product Category
             </label>
@@ -77,9 +98,12 @@ export default function ClaimCheckPage() {
               <option>Dairy</option>
               <option>Other</option>
             </select>
+
           </div>
 
+          {/* Claim */}
           <div className="mt-6">
+
             <label className="text-sm font-medium text-slate-700">
               Proposed Claim
             </label>
@@ -89,10 +113,12 @@ export default function ClaimCheckPage() {
               onChange={(e) => setClaim(e.target.value)}
               type="text"
               placeholder="e.g. High Protein"
-              className="mt-2 w-full rounded-lg border border-slate-300 px-4 py-3 outline-none focus:border-slate-500"
+              className="mt-2 w-full rounded-lg border border-slate-300 px-4 py-3 outline-none transition focus:border-slate-500"
             />
+
           </div>
 
+          {/* Nutrition */}
           <div className="mt-8 border-t border-slate-200 pt-8">
 
             <h2 className="text-lg font-semibold text-slate-900">
@@ -150,13 +176,16 @@ export default function ClaimCheckPage() {
             </div>
           </div>
 
+          {/* Continue */}
           <div className="mt-8 flex justify-end">
+
             <button
               onClick={handleContinue}
-              className="rounded-lg bg-slate-900 px-6 py-3 text-sm font-medium text-white hover:bg-slate-800"
+              className="rounded-xl bg-slate-900 px-6 py-3 text-sm font-medium text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-slate-800 hover:shadow-md"
             >
               Continue →
             </button>
+
           </div>
 
         </div>
