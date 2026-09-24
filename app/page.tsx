@@ -1,14 +1,44 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 export default function Home() {
-  return (
-    <main className="min-h-screen overflow-hidden bg-[#f7f9fc] text-slate-900">
+  const [greeting, setGreeting] = useState("Good");
 
-      {/* Soft floating background elements */}
+  useEffect(() => {
+    const hour = new Date().getHours();
+
+    if (hour < 12) {
+      setGreeting("Good morning");
+    } else if (hour < 17) {
+      setGreeting("Good afternoon");
+    } else {
+      setGreeting("Good evening");
+    }
+  }, []);
+
+  return (
+    <main className="relative min-h-screen overflow-hidden bg-[#f7f9fc] text-slate-900">
+
+      {/* Decorative background */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute left-[12%] top-[10%] h-32 w-32 animate-pulse rounded-full bg-blue-100/50 blur-3xl" />
-        <div className="absolute right-[12%] top-[25%] h-40 w-40 animate-pulse rounded-full bg-emerald-100/50 blur-3xl" />
-        <div className="absolute bottom-[10%] left-[42%] h-36 w-36 animate-pulse rounded-full bg-purple-100/40 blur-3xl" />
+
+        <div className="absolute left-[8%] top-[12%] h-28 w-28 rounded-full bg-blue-200/30 blur-2xl" />
+
+        <div className="absolute right-[10%] top-[18%] h-36 w-36 rounded-full bg-emerald-200/30 blur-3xl" />
+
+        <div className="absolute bottom-[8%] left-[42%] h-40 w-40 rounded-full bg-purple-200/25 blur-3xl" />
+
+        <div
+          className="absolute inset-0 opacity-30"
+          style={{
+            backgroundImage:
+              "radial-gradient(#94a3b8 1px, transparent 1px)",
+            backgroundSize: "28px 28px",
+          }}
+        />
+
       </div>
 
       <div className="relative flex min-h-screen">
@@ -18,7 +48,7 @@ export default function Home() {
 
           <div className="mb-10 flex items-center gap-3">
 
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-900 text-lg font-bold text-white shadow-sm">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-900 text-lg font-bold text-white shadow-md">
               V
             </div>
 
@@ -72,22 +102,24 @@ export default function Home() {
             <div className="mb-10 flex items-center justify-between">
 
               <div>
+
                 <p className="text-sm font-medium text-slate-500">
                   Product-Proof Intelligence
                 </p>
 
-                <h2 className="mt-2 font-serif text-4xl font-semibold">
-                  Good morning
+                <h2 className="mt-2 font-serif text-4xl font-semibold tracking-tight">
+                  {greeting}!
                 </h2>
 
                 <p className="mt-2 text-slate-500">
                   Verify product claims before they reach the market.
                 </p>
+
               </div>
 
               <Link
                 href="/claim-check"
-                className="rounded-xl bg-slate-900 px-5 py-3 text-sm font-medium text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-slate-800 hover:shadow-lg"
+                className="rounded-xl bg-slate-900 px-5 py-3 text-sm font-medium text-white shadow-md transition hover:-translate-y-0.5 hover:bg-slate-800 hover:shadow-lg"
               >
                 + Start New Claim Check
               </Link>
@@ -121,9 +153,10 @@ export default function Home() {
             </div>
 
             {/* Recent evaluations */}
-            <div className="mt-8 rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <div className="mt-8 rounded-2xl border border-slate-200 bg-white/95 shadow-sm">
 
               <div className="border-b border-slate-200 p-6">
+
                 <h3 className="font-semibold">
                   Recent Evaluations
                 </h3>
@@ -131,6 +164,7 @@ export default function Home() {
                 <p className="mt-1 text-sm text-slate-500">
                   Recent product claims reviewed by Veritas.
                 </p>
+
               </div>
 
               <Evaluation
@@ -156,10 +190,11 @@ export default function Home() {
 
             </div>
 
-            {/* Regulatory reference */}
-            <div className="mt-6 flex items-center justify-between rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+            {/* FSSAI reference */}
+            <div className="mt-6 flex items-center justify-between rounded-2xl border border-slate-200 bg-white/95 p-6 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
 
               <div>
+
                 <p className="text-sm font-medium text-slate-500">
                   Regulatory Reference
                 </p>
@@ -169,8 +204,10 @@ export default function Home() {
                 </h3>
 
                 <p className="mt-1 text-sm text-slate-500">
-                  Reference source for food standards and regulatory criteria.
+                  Public reference source for food standards and regulatory
+                  criteria.
                 </p>
+
               </div>
 
               <a
@@ -187,7 +224,9 @@ export default function Home() {
           </div>
 
         </section>
+
       </div>
+
     </main>
   );
 }
@@ -204,7 +243,7 @@ function StatusCard({
   colour: string;
 }) {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md">
+    <div className="rounded-2xl border border-slate-200 bg-white/95 p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md">
 
       <p className="text-sm text-slate-500">
         {title}

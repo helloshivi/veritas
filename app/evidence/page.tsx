@@ -7,7 +7,6 @@ export default function EvidencePage() {
   const router = useRouter();
 
   const [product, setProduct] = useState<any>(null);
-  const [fileName, setFileName] = useState("");
 
   useEffect(() => {
     const saved = localStorage.getItem("veritasClaim");
@@ -18,10 +17,19 @@ export default function EvidencePage() {
   }, []);
 
   function handleAnalyse() {
-    if (!fileName) {
-      alert("Please upload supporting evidence before analysis.");
+    if (!product?.productName || !product?.claim) {
+      alert("Please complete the product and claim details first.");
+      router.push("/claim-check");
       return;
     }
+
+    localStorage.setItem(
+      "veritasEvidence",
+      JSON.stringify({
+        fileName: "Sample Nutrition Evidence",
+        uploaded: true,
+      })
+    );
 
     router.push("/analysis");
   }
@@ -32,19 +40,18 @@ export default function EvidencePage() {
       <div className="mx-auto max-w-4xl">
 
         <p className="text-sm font-medium text-slate-500">
-          Evidence Upload
+          Evidence Ready
         </p>
 
         <h1 className="mt-2 font-serif text-4xl font-semibold text-slate-900">
-          Add Product Evidence
+          Product Evidence
         </h1>
 
         <p className="mt-2 text-slate-500">
-          Veritas uses product evidence to evaluate whether the proposed claim
-          can be supported.
+          Veritas has structured evidence available for the demonstration.
         </p>
 
-        {/* Product summary */}
+        {/* Product */}
         <div className="mt-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
 
           <p className="text-sm text-slate-500">
@@ -69,66 +76,89 @@ export default function EvidencePage() {
 
         </div>
 
-        {/* Upload */}
+        {/* Evidence */}
         <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
 
-          <h2 className="text-lg font-semibold text-slate-900">
-            Upload Evidence
-          </h2>
+          <div className="flex items-center justify-between">
 
-          <p className="mt-1 text-sm text-slate-500">
-            Upload nutrition labels, product specifications, test reports or
-            supporting documents.
-          </p>
+            <div>
 
-          <label className="mt-6 flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-300 px-6 py-12 text-center transition hover:border-slate-400 hover:bg-slate-50">
+              <h2 className="text-lg font-semibold text-slate-900">
+                Evidence Available
+              </h2>
 
-            <div className="text-3xl">
-              ↑
+              <p className="mt-1 text-sm text-slate-500">
+                Structured nutrition evidence is ready for Veritas analysis.
+              </p>
+
             </div>
 
-            <p className="mt-3 text-sm font-medium text-slate-700">
-              Click to upload evidence
-            </p>
-
-            <p className="mt-1 text-xs text-slate-400">
-              PDF, JPG, PNG or DOCX
-            </p>
-
-            <input
-              type="file"
-              accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
-              className="hidden"
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-
-                if (file) {
-                  setFileName(file.name);
-
-                  localStorage.setItem(
-                    "veritasEvidence",
-                    JSON.stringify({
-                      fileName: file.name,
-                      uploaded: true,
-                    })
-                  );
-                }
-              }}
-            />
-
-          </label>
-
-          {fileName && (
-            <div className="mt-4 rounded-lg bg-green-50 px-4 py-3 text-sm text-green-700">
-              ✓ Evidence added: {fileName}
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-green-50 text-xl text-green-600">
+              ✓
             </div>
-          )}
+
+          </div>
+
+          <div className="mt-6 rounded-xl border border-green-100 bg-green-50 p-5">
+
+            <div className="flex items-center gap-4">
+
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white text-sm font-semibold text-slate-700 shadow-sm">
+                DOC
+              </div>
+
+              <div>
+
+                <p className="font-medium text-slate-900">
+                  Sample Nutrition Evidence
+                </p>
+
+                <p className="mt-1 text-xs text-slate-500">
+                  Product nutrition data • Ready for verification
+                </p>
+
+              </div>
+
+              <span className="ml-auto text-xs font-medium text-green-700">
+                Ready
+              </span>
+
+            </div>
+
+          </div>
+
+          <div className="mt-6 rounded-xl bg-slate-50 p-5">
+
+            <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+              Evidence contains
+            </p>
+
+            <div className="mt-4 grid grid-cols-3 gap-4">
+
+              <EvidenceValue
+                label="Protein"
+                value={`${product?.protein || "—"} g`}
+              />
+
+              <EvidenceValue
+                label="Sugar"
+                value={`${product?.sugar || "—"} g`}
+              />
+
+              <EvidenceValue
+                label="Fibre"
+                value={`${product?.fibre || "—"} g`}
+              />
+
+            </div>
+
+          </div>
 
           <div className="mt-8 flex justify-end">
 
             <button
               onClick={handleAnalyse}
-              className="rounded-xl bg-slate-900 px-6 py-3 text-sm font-medium text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-slate-800"
+              className="rounded-xl bg-slate-900 px-6 py-3 text-sm font-medium text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-slate-800 hover:shadow-md"
             >
               Analyse with Veritas →
             </button>
@@ -136,7 +166,29 @@ export default function EvidencePage() {
           </div>
 
         </div>
+
       </div>
+
     </main>
+  );
+}
+
+function EvidenceValue({
+  label,
+  value,
+}: {
+  label: string;
+  value: string;
+}) {
+  return (
+    <div>
+      <p className="text-xs text-slate-500">
+        {label}
+      </p>
+
+      <p className="mt-1 font-semibold text-slate-900">
+        {value}
+      </p>
+    </div>
   );
 }

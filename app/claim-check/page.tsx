@@ -39,8 +39,6 @@ export default function ClaimCheckPage() {
       })
     );
 
-    localStorage.removeItem("veritasEvidence");
-
     router.push("/evidence");
   }
 
@@ -63,7 +61,6 @@ export default function ClaimCheckPage() {
 
         <div className="mt-8 rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
 
-          {/* Product */}
           <div>
 
             <label className="text-sm font-medium text-slate-700">
@@ -80,7 +77,6 @@ export default function ClaimCheckPage() {
 
           </div>
 
-          {/* Category */}
           <div className="mt-6">
 
             <label className="text-sm font-medium text-slate-700">
@@ -101,7 +97,6 @@ export default function ClaimCheckPage() {
 
           </div>
 
-          {/* Claim */}
           <div className="mt-6">
 
             <label className="text-sm font-medium text-slate-700">
@@ -118,7 +113,6 @@ export default function ClaimCheckPage() {
 
           </div>
 
-          {/* Nutrition */}
           <div className="mt-8 border-t border-slate-200 pt-8">
 
             <h2 className="text-lg font-semibold text-slate-900">
@@ -176,7 +170,6 @@ export default function ClaimCheckPage() {
             </div>
           </div>
 
-          {/* Continue */}
           <div className="mt-8 flex justify-end">
 
             <button
@@ -189,7 +182,9 @@ export default function ClaimCheckPage() {
           </div>
 
         </div>
+
       </div>
+
     </main>
   );
 }

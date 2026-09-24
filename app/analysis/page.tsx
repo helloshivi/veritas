@@ -22,7 +22,7 @@ export default function AnalysisPage() {
     }
   }, []);
 
-  /* No data state */
+  /* Missing data */
   if (
     !product ||
     !product.productName ||
@@ -52,19 +52,81 @@ export default function AnalysisPage() {
 
           <button
             onClick={() => router.push("/claim-check")}
-            className="mt-6 rounded-xl bg-slate-900 px-5 py-3 text-sm font-medium text-white transition hover:bg-slate-800"
+            className="mt-6 rounded-xl bg-slate-900 px-5 py-3 text-sm font-medium text-white"
           >
             Start a Claim Check →
           </button>
 
         </div>
+
       </main>
     );
   }
 
   const productName = product.productName;
   const claim = product.claim;
-  const protein = product.protein;
+  const protein = Number(product.protein);
+  const sugar = Number(product.sugar);
+  const fibre = Number(product.fibre);
+
+  const normalisedClaim = claim.toLowerCase().trim();
+
+  let decision = "REVIEW REQUIRED";
+  let decisionColour = "amber";
+  let decisionReason =
+    "Veritas could not confidently support this claim using the configured demo rules.";
+
+  let ruleText = "Claim requires human review.";
+
+  if (normalisedClaim.includes("high protein")) {
+    ruleText = "Demo rule: protein ≥ 20 g and sugar ≤ 20 g.";
+
+    if (protein >= 20 && sugar <= 20) {
+      decision = "SUPPORTED";
+      decisionColour = "green";
+      decisionReason =
+        "The available product data satisfies the configured demo screening rule.";
+    } else {
+      decision = "REVIEW REQUIRED";
+      decisionColour = "amber";
+      decisionReason =
+        "The available nutrition data does not satisfy the configured demo screening rule.";
+    }
+  } else if (normalisedClaim.includes("low sugar")) {
+    ruleText = "Demo rule: sugar ≤ 5 g.";
+
+    if (sugar <= 5) {
+      decision = "SUPPORTED";
+      decisionColour = "green";
+      decisionReason =
+        "The available product data satisfies the configured demo screening rule.";
+    } else {
+      decision = "REVIEW REQUIRED";
+      decisionColour = "amber";
+      decisionReason =
+        "The entered sugar value is above the configured demo screening threshold.";
+    }
+  } else if (
+    normalisedClaim.includes("source of fibre") ||
+    normalisedClaim.includes("high fibre") ||
+    normalisedClaim.includes("fiber")
+  ) {
+    ruleText = "Demo rule: fibre ≥ 3 g.";
+
+    if (fibre >= 3) {
+      decision = "SUPPORTED";
+      decisionColour = "green";
+      decisionReason =
+        "The available product data satisfies the configured demo screening rule.";
+    } else {
+      decision = "REVIEW REQUIRED";
+      decisionColour = "amber";
+      decisionReason =
+        "The available fibre value does not satisfy the configured demo screening rule.";
+    }
+  }
+
+  const isSupported = decision === "SUPPORTED";
 
   return (
     <main className="min-h-screen bg-slate-50 p-10">
@@ -116,6 +178,7 @@ export default function AnalysisPage() {
           <div className="flex items-center justify-between">
 
             <div>
+
               <h2 className="text-lg font-semibold text-slate-900">
                 Proof Graph
               </h2>
@@ -123,9 +186,16 @@ export default function AnalysisPage() {
               <p className="mt-1 text-sm text-slate-500">
                 How Veritas connects the claim to product evidence.
               </p>
+
             </div>
 
-            <span className="rounded-full bg-green-50 px-4 py-2 text-xs font-medium text-green-700">
+            <span
+              className={`rounded-full px-4 py-2 text-xs font-medium ${
+                isSupported
+                  ? "bg-green-50 text-green-700"
+                  : "bg-amber-50 text-amber-700"
+              }`}
+            >
               Analysis Complete
             </span>
 
@@ -149,22 +219,22 @@ export default function AnalysisPage() {
 
             <GraphNode
               title="PRODUCT DATA"
-              value={`Protein: ${protein} g`}
+              value={`P ${protein}g • S ${sugar}g • F ${fibre}g`}
             />
 
             <Arrow />
 
             <GraphNode
               title="EVIDENCE"
-              value="Nutrition document"
+              value="Nutrition evidence"
             />
 
             <Arrow />
 
             <GraphNode
               title="DECISION"
-              value="Supported"
-              success
+              value={decision === "SUPPORTED" ? "Supported" : "Review"}
+              success={isSupported}
             />
 
           </div>
@@ -174,7 +244,7 @@ export default function AnalysisPage() {
         {/* Analysis + Decision */}
         <div className="mt-8 grid grid-cols-2 gap-6">
 
-          {/* Evidence analysis */}
+          {/* Analysis */}
           <div className="rounded-2xl border border-slate-200 bg-white p-7 shadow-sm">
 
             <h2 className="text-lg font-semibold text-slate-900">
@@ -190,17 +260,17 @@ export default function AnalysisPage() {
 
               <AnalysisStep
                 title="Rule identified"
-                text="Relevant claim criterion identified for evaluation."
+                text={ruleText}
               />
 
               <AnalysisStep
                 title="Product data extracted"
-                text={`Protein value available: ${protein} g`}
+                text={`Protein: ${protein} g • Sugar: ${sugar} g • Fibre: ${fibre} g`}
               />
 
               <AnalysisStep
                 title="Evidence matched"
-                text={`Supporting document: ${evidence.fileName}`}
+                text="Structured nutrition evidence is available."
               />
 
             </div>
@@ -214,22 +284,44 @@ export default function AnalysisPage() {
               Veritas Decision
             </p>
 
-            <div className="mt-5 rounded-xl bg-green-50 p-6">
+            <div
+              className={`mt-5 rounded-xl p-6 ${
+                isSupported ? "bg-green-50" : "bg-amber-50"
+              }`}
+            >
 
               <div className="flex items-center gap-3">
 
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-100 text-xl">
-                  ✓
+                <div
+                  className={`flex h-10 w-10 items-center justify-center rounded-full ${
+                    isSupported
+                      ? "bg-green-100 text-green-700"
+                      : "bg-amber-100 text-amber-700"
+                  }`}
+                >
+                  {isSupported ? "✓" : "!"}
                 </div>
 
                 <div>
 
-                  <p className="text-2xl font-bold text-green-700">
-                    SUPPORTED
+                  <p
+                    className={`text-2xl font-bold ${
+                      isSupported
+                        ? "text-green-700"
+                        : "text-amber-700"
+                    }`}
+                  >
+                    {decision}
                   </p>
 
-                  <p className="text-sm text-green-700">
-                    Evidence is available for the proposed claim.
+                  <p
+                    className={`text-sm ${
+                      isSupported
+                        ? "text-green-700"
+                        : "text-amber-700"
+                    }`}
+                  >
+                    {decisionReason}
                   </p>
 
                 </div>
@@ -251,8 +343,8 @@ export default function AnalysisPage() {
               />
 
               <DecisionRow
-                label="Evidence completeness"
-                value="100%"
+                label="Rule evaluation"
+                value={isSupported ? "✓ Passed" : "⚠ Review"}
               />
 
             </div>
@@ -264,30 +356,31 @@ export default function AnalysisPage() {
         {/* Recommendation */}
         <div className="mt-8 rounded-2xl border border-slate-200 bg-white p-7 shadow-sm">
 
-          <div className="flex items-start justify-between gap-8">
+          <p className="text-sm font-medium text-slate-500">
+            Veritas Recommendation
+          </p>
 
-            <div>
+          <h2 className="mt-2 text-xl font-semibold text-slate-900">
+            {isSupported
+              ? "Proof is available for the proposed claim."
+              : "Additional review is recommended before using this claim."}
+          </h2>
 
-              <p className="text-sm font-medium text-slate-500">
-                Veritas Recommendation
-              </p>
+          <p className="mt-2 max-w-4xl text-sm leading-6 text-slate-500">
+            {decisionReason} Veritas provides a traceable path from the
+            proposed claim through the evaluation rule, product data and
+            supporting evidence.
+          </p>
 
-              <h2 className="mt-2 text-xl font-semibold text-slate-900">
-                Proof is available for the proposed claim.
-              </h2>
+          <div className="mt-5 flex items-center justify-between">
 
-              <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-500">
-                The product has structured nutrition data and supporting
-                evidence available. Veritas has connected the claim,
-                evaluation criterion, product data and evidence into a
-                traceable proof path.
-              </p>
-
-            </div>
+            <p className="text-xs text-slate-400">
+              Demo screening logic — not a regulatory determination.
+            </p>
 
             <button
               onClick={() => router.push("/")}
-              className="shrink-0 rounded-xl bg-slate-900 px-5 py-3 text-sm font-medium text-white transition hover:bg-slate-800"
+              className="rounded-xl bg-slate-900 px-5 py-3 text-sm font-medium text-white transition hover:bg-slate-800"
             >
               Back to Dashboard
             </button>
@@ -296,31 +389,11 @@ export default function AnalysisPage() {
 
         </div>
 
-        {/* Evidence trace */}
-        <div className="mt-6 rounded-xl border border-slate-200 bg-white p-5">
-
-          <p className="text-xs font-medium uppercase tracking-wider text-slate-400">
-            Evidence Trace
-          </p>
-
-          <p className="mt-2 text-sm text-slate-600">
-            {evidence.fileName}
-          </p>
-
-        </div>
-
-        <p className="mt-5 text-center text-xs text-slate-400">
-          MVP demonstration — decision logic can be expanded with
-          jurisdiction-specific regulatory rules and automated document
-          extraction.
-        </p>
-
       </div>
+
     </main>
   );
 }
-
-/* Summary card */
 
 function SummaryCard({
   label,
@@ -349,8 +422,6 @@ function SummaryCard({
     </div>
   );
 }
-
-/* Graph node */
 
 function GraphNode({
   title,
@@ -386,8 +457,6 @@ function GraphNode({
   );
 }
 
-/* Arrow */
-
 function Arrow() {
   return (
     <div className="text-xl text-slate-300">
@@ -395,8 +464,6 @@ function Arrow() {
     </div>
   );
 }
-
-/* Analysis step */
 
 function AnalysisStep({
   title,
@@ -427,8 +494,6 @@ function AnalysisStep({
     </div>
   );
 }
-
-/* Decision row */
 
 function DecisionRow({
   label,
